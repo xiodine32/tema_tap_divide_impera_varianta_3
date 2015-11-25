@@ -5,8 +5,9 @@ Tema 5 - Varianta 3
 Cerinte
 ===
 
-  1. Se dă un vector a=(a1,…an) de tip munte (există un indice i astfel încât a1<a2<…<ai > ai+1>…>an; ai
-  se numește vârful muntelui).
+  1. Se dă un vector a=(a<sub>1</sub>,…a<sub>n</sub>) de tip munte (există un indice
+  i astfel încât a<sub>1</sub>&lt;a<sub>2</sub>&lt;…&lt; a<sub>i</sub> &gt;a<sub>i</sub>+1&gt;…&gt;a<sub>n</sub>;
+  a<sub>i</sub> se numește vârful muntelui).
   
      Propuneți un algoritm O(log n) care determină vârful muntelui (în calculul complexității algoritmului nu se
      consideră și citirea vectorului). __exc 1,cap. 5 (1p)__
@@ -15,8 +16,8 @@ Cerinte
   
   3. Se consideră un vector cu n elemente. 
      
-     Se numeşte inversiune semnificativă a vectorului o pereche perechi (i, j) cu proprietatea că i < j şi ai > 2*aj.
-     
+     Se numeşte inversiune semnificativă a vectorului o pereche perechi (i, j) cu proprietatea că i &lt;
+     j şi a<sub>i</sub> &gt; 2*a<sub>j</sub>.
      
      Să de determine numărul de inversiuni semnificative din vector. 
      
