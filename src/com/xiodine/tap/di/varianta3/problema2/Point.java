@@ -5,9 +5,9 @@ package com.xiodine.tap.di.varianta3.problema2;
  */
 public class Point {
 
-    int n, x, y;
+    int x, y;
 
-    Point(int n, int x, int y) {
+    public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }

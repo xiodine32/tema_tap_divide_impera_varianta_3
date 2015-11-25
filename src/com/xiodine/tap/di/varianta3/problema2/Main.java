@@ -14,13 +14,16 @@ public class Main {
     public Main() {
         Scanner in = new Scanner(System.in);
 
-        ArrayList<Integer> vector = new ArrayList<>();
+        ArrayList<Point> vector = new ArrayList<>();
         int n = in.nextInt(), m = in.nextInt();
         for (int i = 0; i < n; i++)
-            vector.add(in.nextInt());
+            vector.add(new Point(in.nextInt(), in.nextInt()));
 
-        OneStrategy<ArrayList<Integer>, Integer> strategy = new DivideImperaStrategy();
+        OneStrategy<ArrayList<Point>, Integer> strategy = new DivideImperaStrategy(n);
 
         strategy.setElements(vector);
+
+        while (strategy.canSelect())
+            System.out.println(strategy + ": " + strategy.select());
     }
 }
