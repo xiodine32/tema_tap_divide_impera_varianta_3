@@ -16,14 +16,18 @@ public class Main {
 
         ArrayList<Point> vector = new ArrayList<>();
         int n = in.nextInt(), m = in.nextInt();
-        for (int i = 0; i < n; i++)
-            vector.add(new Point(in.nextInt(), in.nextInt()));
+        for (int i = 0; i < m; i++) {
+            int y = in.nextInt();
+            int x = in.nextInt();
+            vector.add(new Point(x, y));
+        }
 
         OneStrategy<ArrayList<Point>, Integer> strategy = new DivideImperaStrategy(n);
 
         strategy.setElements(vector);
 
+        int index = 0;
         while (strategy.canSelect())
-            System.out.println(strategy + ": " + strategy.select());
+            System.out.println(strategy + ": " + strategy.select() + " for " + vector.get(index++));
     }
 }

@@ -8,10 +8,17 @@ import java.util.Scanner;
 
 public class Main {
 
+    private static boolean inTesting = true;
+    private static int testingNumber = 1;
+
+
     public static void main(String[] args) {
         boolean result = true;
         while (result) {
             result = (new Main()).run();
+            if (inTesting) {
+                result = false;
+            }
         }
         System.out.println("Goodbye!");
     }
@@ -27,10 +34,16 @@ public class Main {
                 "exit"});
 
         // pick problem
-        menuHelper.run(System.out, new Scanner(System.in));
+        int problema;
 
-        // get answer
-        int problema = menuHelper.getAnswer();
+        if (!inTesting) {
+            menuHelper.run(System.out, new Scanner(System.in));
+
+            // get answer
+            problema = menuHelper.getAnswer();
+        } else {
+            problema = testingNumber;
+        }
 
         if (problema == 5)
             return false;

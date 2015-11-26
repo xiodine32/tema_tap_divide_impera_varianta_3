@@ -14,14 +14,14 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
     private ArrayList<Integer> output = new ArrayList<>();
 
     public DivideImperaStrategy(int n) {
-        this.maxSize = pow2smart(n);
+        this.maxSize = powsmart(n, 2);
     }
 
-    private int pow2smart(int n) {
+    private int powsmart(int n, int start) {
         if (n == 1)
-            return 2;
+            return start;
 
-        int half = pow2smart(n / 2);
+        int half = powsmart(n / 2, start);
 
         if (n % 2 == 0)
             return half * half;
@@ -35,8 +35,16 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
 
     private int solve(Point point) {
         ArrayList<Integer> cadrane = toCadrane(point, new Point(1, 1), new Point(this.maxSize, this.maxSize));
-        System.err.println(cadrane);
-        return 0;
+        int putere = 1;
+        int numar = 0;
+        if (cadrane == null)
+            return -1;
+        for (int item : cadrane) {
+            numar += putere * item;
+            putere *= 4;
+        }
+
+        return numar + 1;
     }
 
     private ArrayList<Integer> toCadrane(Point point, Point st, Point en) {
@@ -47,26 +55,33 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
         if (tp.getX() == 0 && tp.getY() == 0) {
             ArrayList<Integer> result = new ArrayList<>();
             result.add(0);
+//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 0");
             return result;
         }
         if (tp.getX() == 1 && tp.getY() == 0) {
             ArrayList<Integer> result = new ArrayList<>();
             result.add(1);
+//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 1");
             return result;
         }
         if (tp.getX() == 0 && tp.getY() == 1) {
             ArrayList<Integer> result = new ArrayList<>();
             result.add(2);
+//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 2");
             return result;
         }
         if (tp.getX() == 1 && tp.getY() == 1) {
             ArrayList<Integer> result = new ArrayList<>();
             result.add(3);
+//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 3");
             return result;
         }
 
         // always divisible
-        Point center = new Point(ten.getX() / 2, ten.getY() / 2);
+        Point center = new Point((tst.getX() + ten.getX()) / 2, (tst.getY() + ten.getY()) / 2);
+
+
+
 
         int cadran;
 
@@ -79,50 +94,27 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
         else
             cadran = 3;
 
+//        System.out.println("target: " + tp + " cu " + tst + " - " + center + " - " + ten + " => " + cadran);
+
         ArrayList<Integer> interior = null;
-        // todo: THIS
         switch (cadran) {
             case 0:
-                interior = toCadrane(tp, tst, ten);
+                interior = toCadrane(tp, tst, center);
                 break;
             case 1:
-                interior = toCadrane(tp, tst, ten);
+                interior = toCadrane(tp, new Point(center.getX() + 1, tst.getY()), ten);
                 break;
             case 2:
-                interior = toCadrane(tp, tst, ten);
+                interior = toCadrane(tp, new Point(tst.getX(), center.getY() + 1), new Point(center.getX(), ten.getY()));
                 break;
             case 3:
-                interior = toCadrane(tp, tst, ten);
+                interior = toCadrane(tp, new Point(center.getX() + 1, center.getY() + 1), ten);
                 break;
         }
         if (interior == null)
             return null;
         interior.add(cadran);
         return interior;
-    }
-
-    private int dai(Point element) {
-        if (element.getX() < 2 && element.getY() < 2) {
-            int cadran = cadran(element.getX(), element.getY()) + 1;
-            System.out.println("cadran: " + cadran);
-            return cadran;
-        }
-
-        int x = element.getX() % 2;
-        int y = element.getY() % 2;
-        int cadran = cadran(x, y);
-        System.out.println("cadran: " + cadran);
-        return dai(new Point(element.getX() / 2, element.getY() / 2)) * 4 + cadran;
-    }
-
-    private int cadran(int x, int y) {
-        if (x == 0 && y == 0)
-            return 0;
-        if (x == 1 && y == 0)
-            return 1;
-        if (x == 0 && y == 1)
-            return 2;
-        return 3;
     }
 
 
