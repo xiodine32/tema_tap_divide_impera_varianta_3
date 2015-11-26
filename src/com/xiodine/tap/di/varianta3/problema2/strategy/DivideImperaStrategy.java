@@ -10,6 +10,8 @@ import java.util.ArrayList;
  */
 public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integer> {
 
+    private static boolean isDebug = true;
+
     private int maxSize;
     private ArrayList<Integer> output = new ArrayList<>();
 
@@ -43,7 +45,8 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
             numar += putere * item;
             putere *= 4;
         }
-
+        if (isDebug)
+            System.out.println(" - cadrane: " + cadrane + " punct: " + point + " rezultat: " + (numar + 1) + "\n");
         return numar + 1;
     }
 
@@ -51,37 +54,39 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
         Point tst = new Point(0, 0);
         Point ten = new Point(en.getX() - st.getX(), en.getY() - st.getY());
         Point tp = new Point(point.getX() - st.getX(), point.getY() - st.getY());
-
-        if (tp.getX() == 0 && tp.getY() == 0) {
-            ArrayList<Integer> result = new ArrayList<>();
-            result.add(0);
-//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 0");
-            return result;
+        if (ten.getX() <= 1 && ten.getY() <= 1) {
+            if (tp.getX() == 0 && tp.getY() == 0) {
+                ArrayList<Integer> result = new ArrayList<>();
+                result.add(0);
+                if (isDebug)
+                    System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => cadran: 0");
+                return result;
+            }
+            if (tp.getX() == 1 && tp.getY() == 0) {
+                ArrayList<Integer> result = new ArrayList<>();
+                result.add(1);
+                if (isDebug)
+                    System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => cadran: 1");
+                return result;
+            }
+            if (tp.getX() == 0 && tp.getY() == 1) {
+                ArrayList<Integer> result = new ArrayList<>();
+                result.add(2);
+                if (isDebug)
+                    System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => cadran: 2");
+                return result;
+            }
+            if (tp.getX() == 1 && tp.getY() == 1) {
+                ArrayList<Integer> result = new ArrayList<>();
+                result.add(3);
+                if (isDebug)
+                    System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => cadran: 3");
+                return result;
+            }
         }
-        if (tp.getX() == 1 && tp.getY() == 0) {
-            ArrayList<Integer> result = new ArrayList<>();
-            result.add(1);
-//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 1");
-            return result;
-        }
-        if (tp.getX() == 0 && tp.getY() == 1) {
-            ArrayList<Integer> result = new ArrayList<>();
-            result.add(2);
-//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 2");
-            return result;
-        }
-        if (tp.getX() == 1 && tp.getY() == 1) {
-            ArrayList<Integer> result = new ArrayList<>();
-            result.add(3);
-//            System.out.println("target: " + tp + " cu " + tst + " - " + ten + " => 3");
-            return result;
-        }
 
-        // always divisible
-        Point center = new Point((tst.getX() + ten.getX()) / 2, (tst.getY() + ten.getY()) / 2);
-
-
-
+        // no need for average, it's always 0
+        Point center = new Point(ten.getX() / 2, ten.getY() / 2);
 
         int cadran;
 
@@ -93,8 +98,8 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
             cadran = 2;
         else
             cadran = 3;
-
-//        System.out.println("target: " + tp + " cu " + tst + " - " + center + " - " + ten + " => " + cadran);
+        if (isDebug)
+            System.out.println("target: " + tp + " cu " + tst + " - " + center + " - " + ten + " => cadran: " + cadran);
 
         ArrayList<Integer> interior = null;
         switch (cadran) {
@@ -102,7 +107,7 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Integ
                 interior = toCadrane(tp, tst, center);
                 break;
             case 1:
-                interior = toCadrane(tp, new Point(center.getX() + 1, tst.getY()), ten);
+                interior = toCadrane(tp, new Point(center.getX() + 1, tst.getY()), new Point(ten.getX(), center.getY()));
                 break;
             case 2:
                 interior = toCadrane(tp, new Point(tst.getX(), center.getY() + 1), new Point(center.getX(), ten.getY()));
