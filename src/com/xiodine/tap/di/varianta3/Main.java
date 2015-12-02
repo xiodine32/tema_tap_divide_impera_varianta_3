@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Main {
 
     private static boolean inTesting = true;
-    private static int testingNumber = 1;
+    private static int testingNumber = 2;
 
 
     public static void main(String[] args) {
@@ -29,8 +29,6 @@ public class Main {
                 "Problem 1",
                 "Problem 2",
                 "Problem 3",
-                "Problem 4",
-                "Problem 5",
                 "exit"});
 
         // pick problem
@@ -100,6 +98,10 @@ public class Main {
             timer.runTest();
         } catch (Exception e) {
             System.err.println("Uh oh, program crashed!");
+            try {
+                System.out.println(out.toString("UTF-8"));
+            } catch (Exception ignored) {
+            }
             e.printStackTrace();
         }
 
