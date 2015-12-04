@@ -32,7 +32,7 @@ public class Menu {
     public void displayQuestion(PrintStream printer) {
         printer.print(name + ":\n");
         printer.flush();
-        int vi = 0;
+        int vi = 1;
         for (String i : names) {
             printer.print("  " + (vi++) + ". " + i + "\n");
         }

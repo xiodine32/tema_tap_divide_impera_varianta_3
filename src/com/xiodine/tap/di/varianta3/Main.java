@@ -8,14 +8,22 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static boolean inTesting = true;
+    public static final String[] OPTIONS = new String[]{
+            "Problem 1",
+            "Problem 2",
+            "Problem 3",
+            "exit"};
+    private static boolean inTesting = false;
     private static int testingNumber = 2;
-
 
     public static void main(String[] args) {
         boolean result = true;
         while (result) {
-            result = (new Main()).run();
+            try {
+                result = (new Main()).run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (inTesting) {
                 result = false;
             }
@@ -23,13 +31,52 @@ public class Main {
         System.out.println("Goodbye!");
     }
 
-    private boolean run() {
+    private boolean run() throws Exception {
+        int problema = getProblema(OPTIONS);
+
+        if (problema == OPTIONS.length)
+            return false;
+
+        // construct class
+        Class<?> selectedClass = getClass(problema);
+        Constructor constructor = getConstructor(selectedClass);
+
+        // save old redirects
+        InputStream oldIn = System.in;
+        PrintStream oldOut = System.out;
+
+        // start loading redirects
+        InputStream in = getInputStream(problema);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        redirectInputOutput(in, new PrintStream(out));
+
+        NanoTimer timer = new NanoTimer(constructor);
+
+        // run once for output
+        runTest(out, timer);
+        String result = getResult(out);
+
+        writeOutput(timer, result, oldOut);
+
+        // restore redirects
+        redirectInputOutput(oldIn, oldOut);
+
+
+        return true;
+    }
+
+    private void redirectInputOutput(InputStream in, PrintStream out2) {
+        System.setOut(out2);
+        System.setIn(in);
+    }
+
+    private String getResult(ByteArrayOutputStream out) throws UnsupportedEncodingException {
+        return out.toString("UTF-8");
+    }
+
+    private int getProblema(String[] options) {
         // create problem picker
-        Menu menuHelper = Menu.factory("Pick exercise number", new String[]{
-                "Problem 1",
-                "Problem 2",
-                "Problem 3",
-                "exit"});
+        Menu menuHelper = Menu.factory("Pick exercise number", options);
 
         // pick problem
         int problema;
@@ -42,87 +89,39 @@ public class Main {
         } else {
             problema = testingNumber;
         }
+        return problema;
+    }
 
-        if (problema == 5)
-            return false;
-        problema++;
+    private void writeOutput(NanoTimer timer, String result, PrintStream printStream) {
+        result = result.trim();
+        printStream.println("Result:\n\n . " + result.replace("\n", "\n . ") + "\n");
+        printStream.printf("Time elapsed: %.8fs\n", timer.getTimerDuration() / 1000000000.0);
+        printStream.println();
+    }
 
-        // construct class
-        Class<?> selectedClass = null;
-        try {
-            selectedClass = Class.forName("com.xiodine.tap.di.varianta3.problema" + problema + ".Main");
-        } catch (Exception e) {
-            System.err.println("Error loading problem!");
-        }
-        if (selectedClass == null)
-            return true;
+    private void runTest(ByteArrayOutputStream out, NanoTimer timer) throws Exception {
+        timer.runTest();
+    }
 
-        Constructor constructor = null;
-        try {
-            constructor = selectedClass.getConstructor();
-        } catch (Exception e) {
-            System.err.println("Error getting constructor for the problem!");
-        }
+    private PrintStream getNothingPrintStream() {
+        return new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
 
-        if (constructor == null)
-            return true;
-
-
-        // start loading redirects
-        String location = "src/com/xiodine/tap/di/varianta3/problema" + problema + "/input.in";
-        InputStream in;
-        try {
-            in = new FileInputStream(location);
-        } catch (FileNotFoundException e) {
-            System.err.println("Location not found: " + location);
-            return true;
-        }
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        // save old redirects
-        InputStream oldIn = System.in;
-        PrintStream oldOut = System.out;
-
-
-        // redirect
-        System.setOut(new PrintStream(out));
-        System.setIn(in);
-
-        // prepare timer
-        NanoTimer timer = new NanoTimer();
-        timer.setLambda(constructor);
-
-        // run test
-        try {
-            timer.runTest();
-        } catch (Exception e) {
-            System.err.println("Uh oh, program crashed!");
-            try {
-                System.out.println(out.toString("UTF-8"));
-            } catch (Exception ignored) {
             }
-            e.printStackTrace();
-        }
+        });
+    }
 
-        // get output
-        String result = null;
-        try {
-            result = out.toString("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("Result cannot be encoded to UTF-8.");
-        }
+    private InputStream getInputStream(int problema) throws FileNotFoundException {
+        String location = "src/com/xiodine/tap/di/varianta3/problema" + problema + "/input.in";
+        return new FileInputStream(location);
+    }
 
+    private Constructor getConstructor(Class<?> selectedClass) throws NoSuchMethodException {
+        return selectedClass.getConstructor();
+    }
 
-        // restore redirects
-        System.setOut(oldOut);
-        System.setIn(oldIn);
-
-
-        // write to output
-        System.out.println("Result:\n\n" + result + "\n");
-        System.out.printf("Time elapsed: %.5fs\n", timer.getTimerDuration() / 1000000000.0);
-        System.out.println();
-        return true;
+    private Class<?> getClass(int problema) throws ClassNotFoundException {
+        return Class.forName("com.xiodine.tap.di.varianta3.problema" + problema + ".Main");
     }
 }

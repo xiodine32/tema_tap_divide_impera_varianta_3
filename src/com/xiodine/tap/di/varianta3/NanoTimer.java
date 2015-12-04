@@ -11,12 +11,12 @@ public class NanoTimer {
     private Constructor<?> constructor;
     private long timerDuration;
 
-    public long getTimerDuration() {
-        return timerDuration;
+    public NanoTimer(Constructor<?> constructor) {
+        this.constructor = constructor;
     }
 
-    public void setLambda(Constructor<?> constructor) {
-        this.constructor = constructor;
+    public long getTimerDuration() {
+        return timerDuration;
     }
 
     public void runTest(Object... initArgs) throws IllegalAccessException, InvocationTargetException, InstantiationException {

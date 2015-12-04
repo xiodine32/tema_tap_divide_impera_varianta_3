@@ -37,18 +37,18 @@ public class Segment {
     }
 
     public double getDistance() {
-        if (distance == null)
-            distance = Point.distance(a, b);
         if (this == NONE)
             return Double.POSITIVE_INFINITY;
+        if (distance == null)
+            distance = Point.distance(a, b);
         return distance;
     }
 
     public double getDistanceSquared() {
-        if (distanceSquared == null)
-            distanceSquared = Point.distanceSquared(a, b);
         if (this == NONE)
             return Double.POSITIVE_INFINITY;
+        if (distanceSquared == null)
+            distanceSquared = Point.distanceSquared(a, b);
         return distanceSquared;
     }
 
