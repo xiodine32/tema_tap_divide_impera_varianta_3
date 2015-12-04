@@ -57,9 +57,9 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Segme
 
         // conquer
 
-        System.out.println("me  : " + elements + " => " + seg);
-        System.out.println("left: " + leftList + "  =>  " + segLeft);
-        System.out.println("righ: " + rightList + "  =>  " + segRight);
+        if (showDebug) System.out.println("me  : " + elements + " => " + seg);
+        if (showDebug) System.out.println("left: " + leftList + "  =>  " + segLeft);
+        if (showDebug) System.out.println("righ: " + rightList + "  =>  " + segRight);
 
 
         ArrayList<Point> reconstruct = new ArrayList<>();
@@ -79,7 +79,7 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Segme
         else
             reconstruct.addAll(leftList.stream().collect(Collectors.toList()));
 
-        System.out.println("reco: " + reconstruct);
+        if (showDebug) System.out.println("reco: " + reconstruct);
 
 
         for (int i = 0; i < reconstruct.size(); i++) {
@@ -97,14 +97,14 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Segme
             }
         }
 
-        System.out.println("vald: " + validPoints);
+        if (showDebug) System.out.println("vald: " + validPoints);
 
         for (int i = 0; i < validPoints.size(); i++)
             for (int j = i + 1; j - i < 8 && j < validPoints.size(); j++)
                 seg = Segment.min(seg, new Segment(validPoints.get(i), validPoints.get(j)));
 
-        System.out.println("me:D: " + elements + " => " + seg);
-        System.out.println();
+        if (showDebug) System.out.println("me:D: " + elements + " => " + seg);
+        if (showDebug) System.out.println();
         // (66, 77), (71, 95)
         return seg;
     }
