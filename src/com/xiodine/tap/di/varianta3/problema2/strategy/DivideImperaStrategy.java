@@ -1,7 +1,7 @@
 package com.xiodine.tap.di.varianta3.problema2.strategy;
 
 import com.xiodine.tap.di.varianta3.helpers.OneStrategy;
-import com.xiodine.tap.di.varianta3.problema2.Point;
+import com.xiodine.tap.di.varianta3.helpers.Point;
 
 import java.util.ArrayList;
 

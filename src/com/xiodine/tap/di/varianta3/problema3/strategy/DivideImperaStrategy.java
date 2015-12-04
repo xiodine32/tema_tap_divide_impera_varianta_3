@@ -1,10 +1,11 @@
 package com.xiodine.tap.di.varianta3.problema3.strategy;
 
 import com.xiodine.tap.di.varianta3.helpers.OneStrategy;
+import com.xiodine.tap.di.varianta3.helpers.Point;
+import com.xiodine.tap.di.varianta3.problema3.Segment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created on 25/11/15.
@@ -14,96 +15,67 @@ import java.util.stream.Collectors;
  * Strategia implementeaza merge sort, avand grija ca in momentul reconstruirii sa verifice daca adauga din list dreapta.
  * Daca da, cauta binar in lista stanga 2 * numarDreapta si adauga ca inversiuni dim(listaStanga) - indiceGasit + 1
  */
-public class DivideImperaStrategy implements OneStrategy<ArrayList<Integer>, Integer> {
+public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Segment> {
 
     public static final boolean showDebug = false;
-
-    private int inversiuni = 0;
-
-    private List<Integer> merge(List<Integer> left, List<Integer> right) {
-
-        List<Integer> generatedList = new ArrayList<>();
-
-        List<Integer> sortedLeft = smartMergeSort(new ArrayList<>(left));
-        List<Integer> sortedRight = smartMergeSort(new ArrayList<>(right));
-
-        while (!sortedLeft.isEmpty() && !sortedRight.isEmpty()) {
-            if (showDebug)
-                System.out.println(" * left: " + sortedLeft + " right: " + sortedRight);
-            boolean selectingRight = false;
-            int selectedRightElement = sortedRight.get(0);
-            Integer selectedLeftElement = sortedLeft.get(0);
-            if (selectedRightElement < selectedLeftElement)
-                selectingRight = true;
-
-            if (selectingRight) {
-                int startIndex = binarySearchLeft(selectedRightElement * 2, sortedLeft);
-                int result = sortedLeft.size() - startIndex;
-                inversiuni += result;
-            }
-
-            if (selectingRight) {
-                generatedList.add(selectedRightElement);
-                sortedRight.remove(0);
-            } else {
-                generatedList.add(selectedLeftElement);
-                sortedLeft.remove(0);
-            }
-        }
-        generatedList.addAll(sortedLeft.stream().collect(Collectors.toList()));
-        generatedList.addAll(sortedRight.stream().collect(Collectors.toList()));
-        return generatedList;
-    }
-
-    private int biggestPow2(int size) {
-        if (size <= 1)
-            return size;
-        int max = 1;
-        while (max * 2 < size)
-            max *= 2;
-        return max;
-    }
-
-    private int binarySearchLeft(int element, List<Integer> list) {
-        int maxN = biggestPow2(list.size());
-        int number = 0;
-        while (maxN >= 1) {
-            if (list.get(number + maxN - 1) < element)
-                number += maxN;
-            maxN /= 2;
-        }
-        return number;
-    }
-
-    private List<Integer> smartMergeSort(List<Integer> elements) {
-        if (elements.size() <= 1)
-            return elements;
-
-        int middle = elements.size() / 2;
-
-        List<Integer> left = elements.subList(0, middle);
-        List<Integer> right = elements.subList(middle, elements.size());
-        if (showDebug)
-            System.out.println("smartMergeSort " + left + " " + right + " => ");
-        List<Integer> merge = merge(left, right);
-        if (showDebug)
-            System.out.println("smartMergeSort " + left + " " + right + " => " + merge);
-        return merge;
-    }
+    private Segment selectedSegment = null;
 
     @Override
     public String toString() {
         return "Divide et Impera Strategy";
     }
 
+
     @Override
-    public void setElements(ArrayList<Integer> elements) {
-        smartMergeSort(elements);
+    public void setElements(ArrayList<Point> elements) {
+        elements.sort((a, b) -> a.getX() - b.getX());
+        selectedSegment = dei(elements);
+    }
+
+    private Segment dei(List<Point> elements) {
+
+        // simple cases
+        if (elements.size() == 1)
+            return Segment.NONE;
+
+        if (elements.size() == 2)
+            return new Segment(elements.get(0), elements.get(1));
+
+        if (elements.size() == 3) {
+            return Segment.min(
+                    Segment.min(
+                            new Segment(elements.get(0), elements.get(1)),
+                            new Segment(elements.get(1), elements.get(2))
+                    ),
+                    new Segment(elements.get(0), elements.get(2))
+            );
+        }
+
+        // complex cases, need divide et impera
+
+        int middle = (elements.size() - 1) / 2;
+        Point middlePoint = elements.get(middle);
+
+
+        // divide
+
+        List<Point> leftList = elements.subList(0, middle);
+        List<Point> rightList = elements.subList(middle, elements.size());
+
+        Segment segLeft = dei(leftList);
+        Segment segRight = dei(rightList);
+
+        // conquer
+
+        System.out.println(leftList + "  =>  " + segLeft);
+        System.out.println(rightList + "  =>  " + segRight);
+
+        return Segment.min(segLeft, segRight);
     }
 
     @Override
-    public Integer select() {
-        return inversiuni;
+    public Segment select() {
+        return selectedSegment;
     }
 
     @Override
