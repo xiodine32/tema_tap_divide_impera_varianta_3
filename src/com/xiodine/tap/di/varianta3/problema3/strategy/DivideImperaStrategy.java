@@ -6,6 +6,7 @@ import com.xiodine.tap.di.varianta3.problema3.Segment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created on 25/11/15.
@@ -28,49 +29,84 @@ public class DivideImperaStrategy implements OneStrategy<ArrayList<Point>, Segme
 
     @Override
     public void setElements(ArrayList<Point> elements) {
-        elements.sort((a, b) -> a.getX() - b.getX());
+        elements.sort((a, b) -> Point.compareTo(Point::getX, a, b));
         selectedSegment = dei(elements);
     }
 
     private Segment dei(List<Point> elements) {
 
         // simple cases
-        if (elements.size() == 1)
+        if (elements.size() < 2)
             return Segment.NONE;
-
-        if (elements.size() == 2)
-            return new Segment(elements.get(0), elements.get(1));
-
-        if (elements.size() == 3) {
-            return Segment.min(
-                    Segment.min(
-                            new Segment(elements.get(0), elements.get(1)),
-                            new Segment(elements.get(1), elements.get(2))
-                    ),
-                    new Segment(elements.get(0), elements.get(2))
-            );
-        }
 
         // complex cases, need divide et impera
 
-        int middle = (elements.size() - 1) / 2;
-        Point middlePoint = elements.get(middle);
+        int middle = (elements.size()) / 2;
+        double middlePointX = elements.get(middle).getX();
 
 
         // divide
 
-        List<Point> leftList = elements.subList(0, middle);
-        List<Point> rightList = elements.subList(middle, elements.size());
+        List<Point> leftList = new ArrayList<>(elements.subList(0, middle));
+        List<Point> rightList = new ArrayList<>(elements.subList(middle, elements.size()));
 
         Segment segLeft = dei(leftList);
         Segment segRight = dei(rightList);
+        Segment seg = Segment.min(segLeft, segRight);
+
 
         // conquer
 
-        System.out.println(leftList + "  =>  " + segLeft);
-        System.out.println(rightList + "  =>  " + segRight);
+        System.out.println("me  : " + elements + " => " + seg);
+        System.out.println("left: " + leftList + "  =>  " + segLeft);
+        System.out.println("righ: " + rightList + "  =>  " + segRight);
 
-        return Segment.min(segLeft, segRight);
+
+        ArrayList<Point> reconstruct = new ArrayList<>();
+
+        while (!leftList.isEmpty() && !rightList.isEmpty()) {
+            final Point min = Point.min(Point::getY, leftList.get(0), rightList.get(0));
+            reconstruct.add(min);
+            if (min == leftList.get(0)) {
+                leftList.remove(0);
+            } else {
+                rightList.remove(0);
+            }
+        }
+
+        if (leftList.isEmpty())
+            reconstruct.addAll(rightList.stream().collect(Collectors.toList()));
+        else
+            reconstruct.addAll(leftList.stream().collect(Collectors.toList()));
+
+        System.out.println("reco: " + reconstruct);
+
+
+        for (int i = 0; i < reconstruct.size(); i++) {
+            elements.set(i, reconstruct.get(i));
+        }
+
+        reconstruct.clear();
+
+
+        ArrayList<Point> validPoints = new ArrayList<>();
+
+        for (Point elem : elements) {
+            if (Math.abs(elem.getX() - middlePointX) <= seg.getDistanceSquared()) {
+                validPoints.add(elem);
+            }
+        }
+
+        System.out.println("vald: " + validPoints);
+
+        for (int i = 0; i < validPoints.size(); i++)
+            for (int j = i + 1; j - i < 8 && j < validPoints.size(); j++)
+                seg = Segment.min(seg, new Segment(validPoints.get(i), validPoints.get(j)));
+
+        System.out.println("me:D: " + elements + " => " + seg);
+        System.out.println();
+        // (66, 77), (71, 95)
+        return seg;
     }
 
     @Override
