@@ -15,7 +15,8 @@ public class Point {
     }
 
     public static double distanceSquared(Point a, Point b) {
-        return (a.getX() - b.getX()) * (a.getX() - b.getX()) + (a.getY() - b.getY()) * (a.getY() - b.getY());
+        return (double) (a.getX() - b.getX()) * (a.getX() - b.getX()) +
+                (double) (a.getY() - b.getY()) * (a.getY() - b.getY());
     }
 
     public static double distance(Point a, Point b) {
